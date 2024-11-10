@@ -17,25 +17,25 @@ def get_data(message):
     try:
         spotify_url = message.text.split(" ", 1)[1]  # Obtener el URL
     except IndexError:
-        bot.reply_to(message, "Por favor ingresa un URL ejem: https://open.spotify.com/intl-es/track/... ")
+        bot.reply_to(message, "Please enter a URL examples: https://open.spotify.com/intl-es/track/... ")
         return
 
     # Extract ID from Spotify URL
     match = re.search(r'track/([^?]+)', spotify_url)
     if not match:
-        bot.reply_to(message, "URL de Spotify no válido.")
+        bot.reply_to(message, "Invalid Spotify URL.")
         return
 
     track_id = match.group(1)
     download_url = f"https://api.spotifydown.com/download/{track_id}"
 
     # Run the JavaScript script with the new URL
-    result = subprocess.run(['node', 'musica.js', download_url], capture_output=True, text=True)
+    result = subprocess.run(['node', 'song.js', download_url], capture_output=True, text=True)
 
     #Check for errors in script execution
     if result.returncode != 0:
         print(result.stderr)
-        bot.reply_to(message, "Error al ejecutar el script: " + result.stderr)
+        bot.reply_to(message, "Error running script: " + result.stderr)
         return
 
     # Read the extracted data
@@ -46,10 +46,10 @@ def get_data(message):
         # Prepare the message to send
         message_text = (
             f"ID: {data['id']}\n"
-            f"Título: {data['title']}\n"
-            f"Álbum: {data['album']}\n"
-            f"Portada: {data['cover']}\n"
-            f"Fecha de lanzamiento: {data['releaseDate']}\n"
+            f"Qualification {data['title']}\n"
+            f"Album: {data['album']}\n"
+            f"Front page: {data['cover']}\n"
+            f"Release date: {data['releaseDate']}\n"
         )
         bot.reply_to(message, message_text)
 
@@ -70,10 +70,10 @@ def get_data(message):
             with open(f"{nombre_song}.mp3", 'rb') as audio:
                 bot.send_audio(chat_id=message.chat.id, audio=audio)
         else:
-            bot.reply_to(message, "Error al descargar el archivo: " + str(response.status_code))
+            bot.reply_to(message, "Error downloading file: " + str(response.status_code))
 
     except Exception as e:
-        bot.reply_to(message, "Error al leer los datos: " + str(e))
+        bot.reply_to(message, "Error reading data: " + str(e))
 #If you want you can delete the songs that are downloaded.
 #Recommended to leave on hosts.
 #Viva RZ.
